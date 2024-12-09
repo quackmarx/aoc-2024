@@ -96,7 +96,7 @@ bool updt_has(int arr[], int x, int depth) {
 	return false;
 }
 
-bool eval_update(int updt[]) {
+int eval_update(int updt[]) {
 	for (size_t i = 0; i < UPDATES_BUF; i++)
 	{
 		if (updt[i] == -1) {
@@ -113,14 +113,14 @@ bool eval_update(int updt[]) {
 				}
 				// Otherwise, if page not before
 				if (!updt_has(updt, xRules[j], i)) {
-					return false;
+					return i;
 				}
 			}
 		}
 		
 	}
 	
-	return true;
+	return -1;
 }
 
 int get_mid(int updt[]) {
@@ -136,20 +136,58 @@ int get_mid(int updt[]) {
 	return len / 2;
 }
 
+void move_to_end(int updt[], int i) {
+	for (size_t j = i; j < UPDATES_BUF - 1; j++) {
+		if (updt[j + 1] == -1) {
+			return;
+		}
+		int t = updt[j];
+		updt[j] = updt[j + 1];
+		updt[j + 1] = t;
+	}
+}
+
+void print_updt(int updt[]) {
+	for (size_t i = 0; i < UPDATES_BUF; i++)
+	{
+		if (updt[i] == -1) {
+			break;
+		}
+		printf("%d ", updt[i]);
+	}
+	printf("\n");
+}
+
+void sort_updt(int updt[]) {
+	int probpg = 0;
+	while (probpg != -1) {
+		probpg = eval_update(updt);
+		move_to_end(updt, probpg);
+	}
+
+}
+
 int main () {
 	read_rules();
 	read_updates();
 	int mid_page_sum = 0;
+	int sort_mid_page_sum = 0;
 	for (size_t i = 0; i < UPDATES_LENGTH; i++)
 	{
-		bool is_correct = eval_update(updates[i]);
-		if (is_correct) {
+		int result = eval_update(updates[i]);
+		if (result == -1) {
 			int mid = get_mid(updates[i]);
 			mid_page_sum += updates[i][mid];
 			printf("%d\n", updates[i][mid]);
+		} else {
+			sort_updt(updates[i]);
+			printf("SORTED: ");
+			print_updt(updates[i]);
+			int mid = get_mid(updates[i]);
+			sort_mid_page_sum += updates[i][mid];
 		}
 	}
 	
 	printf("\nMID PAGE SUM: %d\n", mid_page_sum);
-	
+	printf("\nSORTED MID PAGE SUM: %d\n", sort_mid_page_sum);
 }
