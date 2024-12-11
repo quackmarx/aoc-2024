@@ -93,11 +93,43 @@ void create_annos () {
 	}
 }
 
+void create_resonant_annos () {
+	char antn;
+	// loop over antennas
+	for (size_t y = 0; y < MAP_SIZE; y++)
+	{
+		for (size_t x = 0; x < MAP_SIZE; x++)
+		{
+			antn = antens[x][y];
+			if (antn == '.') {
+				continue;
+			}
+			
+			int mx = x, my = y;
+			int xdist, ydist;
+			while (find_antn(antn, &mx, &my, mx + 1, my)) {
+				xdist = mx - x;
+				ydist = my - y;
+				int n = 0;
+				while (in_bounds(x - xdist * n, y - ydist * n)) {
+					annos[x - xdist * n][y - ydist * n] = '#';
+					n++;
+				}
+				n = 0;
+				while (in_bounds(mx + xdist * n, my + ydist * n)) {
+					annos[mx + xdist * n][my + ydist * n] = '#';
+					n++;
+				}
+			}
+		}
+	}
+}
+
 int main () {
 	read_input();
 	printf("ANTENNAS\n");
 	print_map(antens);
-	create_annos();
+	create_resonant_annos();
 	printf("ANNOS\n");
 	print_map(annos);
 	int annocnt = 0;
@@ -105,5 +137,5 @@ int main () {
 		for (size_t x = 0; x < MAP_SIZE; x++)
 			if (annos[x][y] == '#')
 				annocnt++;
-	printf("ANTI-NODE COUNT: %d\n", annocnt);
+	printf("RESONANT ANTI-NODE COUNT: %d\n", annocnt);
 }
