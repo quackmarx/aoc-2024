@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define FILE_PATH "day9.input"
+#define FILE_PATH "day9.test"
 
 int *pDisk;
 int diskLen;
@@ -60,7 +60,7 @@ void print_disk() {
 			printf(".");
 		}
 	}
-	
+	printf("\n");
 }
 
 int find_empty() {
@@ -92,24 +92,33 @@ bool has_gap() {
 	return false;
 }
 
-int main () {
-	read_file();
-
-	print_disk();
-
+void move_blocks() {
 	int end = diskLen;
 	while (has_gap()) {
 		shift_block(find_empty(), end);
 		end--;
 	}
+}
 
+int main () {
+	read_file();
+
+	print_disk();
+	
+	move_blocks();
+	
+	print_disk();
+	
 	long int checksum = 0;
-	for (size_t i = 0; i < end; i++)
+	for (size_t i = 0; i < diskLen; i++)
 	{
+		if (pDisk[i] == -1) {
+			continue;
+		}
 		checksum += i * pDisk[i];
 	}
 	
-	printf("\nFILESYSTEM CHECKSUM: %ld\n", checksum);
+	printf("FILESYSTEM CHECKSUM: %ld\n", checksum);
 
 	free(pDisk);
 }
