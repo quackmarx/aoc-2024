@@ -108,5 +108,6 @@ int main() {
 	}
 	
 	free(locks);
+	// Why u no?
 	free(keys);
 }
